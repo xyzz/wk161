@@ -1,9 +1,11 @@
 data
 {
 	func infloop = 0x89C00A4F;
+	func svc = 0x89ED8CC0;
 }
 
 code : entry
 {
+	svc(0);
 	infloop(0);
 }
