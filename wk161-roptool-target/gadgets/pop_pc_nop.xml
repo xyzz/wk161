@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<gadget>
+	<address>0x89C004A7</address>
+</gadget>
+
+<!--
+	ROM:89C004A6                 POP             {PC}
+-->

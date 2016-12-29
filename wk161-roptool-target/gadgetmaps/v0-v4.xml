@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<gadgetmap>
+	<!-- Match any amount of arguements that are values -->
+	<regex>.*(\(v{0,5}\))</regex>
+	<stack>
+		<data>GADGET_ADDRESS(pop_r0-r4)</data>
+		<data>ARG0</data>                                               <!-- R0 -->
+		<data>ARG1</data>                                               <!-- R1 -->
+		<data>ARG2</data>                                               <!-- R2 -->
+		<data>ARG3</data>                                               <!-- R3 -->
+		<data>FUNC_ADDRESS</data>                                       <!-- R4 -->
+		<data>GADGET_ADDRESS(mov_r12_r4_blx_r12_pop_r4)</data>			    <!-- PC -->
+		<data>ARG4</data>
+		<data>RETURN_ADDRESS</data>									<!-- PC return -->
+	</stack>
+</gadgetmap>

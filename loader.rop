@@ -1,0 +1,9 @@
+data
+{
+	func infloop = 0x89C00A4F;
+}
+
+code : entry
+{
+	infloop(0);
+}
