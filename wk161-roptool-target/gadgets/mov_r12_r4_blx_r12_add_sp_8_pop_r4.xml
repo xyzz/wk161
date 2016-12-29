@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<gadget>
+	<address>0x89c5bf45</address>
+</gadget>
+
+<!--
+ : mov ip, r4 ; blx ip ; add sp, #8; pop {r4, pc}
+-->

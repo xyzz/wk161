@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<gadgetmap>
+  <regex>storeret(\(v\))</regex>
+  <function>storeret</function>
+  <stack>
+    <data>GADGET_ADDRESS(pop_r1-r2)</data>
+    <data>ARG0</data>
+    <data>0</data>
+    <data>GADGET_ADDRESS(str_r0_r1)</data>
+    <data>0</data>
+    <data>RETURN_ADDRESS</data>
+  </stack>
+</gadgetmap>

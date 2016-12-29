@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<gadgetmap>
+  <regex>store\(vv\)</regex>
+  <function>store</function>
+  <stack>
+    <data>GADGET_ADDRESS(pop_r0-r4)</data>
+    <data>ARG0</data>
+    <data>ARG1</data>
+    <data>0</data>
+    <data>0</data>
+    <data>0</data>
+    <data>GADGET_ADDRESS(str_r0_r1)</data>
+    <data>0</data>
+    <data>RETURN_ADDRESS</data>
+  </stack>
+</gadgetmap>
+

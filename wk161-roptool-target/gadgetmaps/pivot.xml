@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<gadgetmap>
+  <regex>pivot\(v\)</regex>
+  <function>pivot</function>
+  <stack>
+    
+    <data>GADGET_ADDRESS(pop_r0-r4)</data>
+    <data>0</data>
+    <data>ARG0</data>
+    <data>0</data>
+    <data>0</data>
+    <data>0</data>
+    <data>GADGET_ADDRESS(ldm_r1_r0_r7_ip_sp_pc)</data>
+    <data>RETURN_ADDRESS</data>
+  </stack>
+</gadgetmap>

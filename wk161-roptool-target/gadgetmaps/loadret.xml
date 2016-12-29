@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<gadgetmap>
+  <regex>loadret(\(v\))</regex>
+  <function>loadret</function>
+  <stack>
+    <data>GADGET_ADDRESS(pop_r0-r4)</data>
+    <data>0</data>
+    <data>0</data>
+    <data>0</data>
+    <data>0</data>
+    <data>ARG0</data>
+    <data>GADGET_ADDRESS(ldr_r0_r4_add_sp_12_pop_r4_r5)</data>
+    <data>0</data>
+    <data>0</data>
+    <data>0</data>
+    <data>0</data> <!-- r4 -->
+    <data>0</data> <!-- r5 -->
+    <data>RETURN_ADDRESS</data>
+  </stack>
+</gadgetmap>

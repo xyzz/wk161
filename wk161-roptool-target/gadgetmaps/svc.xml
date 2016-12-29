@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<gadgetmap>
+  <regex>svc\(v{1,5}\)</regex>
+  <function>svc</function>
+  <stack>
+    <data>GADGET_ADDRESS(pop_r0-r4)</data>
+    <data>0</data>
+    <data>0</data>
+    <data>ARG0</data> <!-- r2, later r12 -->
+    <data>0</data>
+    <data>0</data>
+    <data>GADGET_ADDRESS(mov_ip_r2_mov_r0_ip_pop_r4)</data>
+    <data>0</data> <!-- r4 -->    
+    <data>GADGET_ADDRESS(pop_r0-r4)</data>
+    <data>ARG1</data>
+    <data>ARG2</data>
+    <data>ARG3</data>
+    <data>ARG4</data>
+    <data>0</data>
+    <data>GADGET_ADDRESS(bl_nullsub_pop_r4)</data>
+    <data>0</data> <!-- r4 -->
+    <data>GADGET_ADDRESS(svc_0_bx_lr)</data>
+    <data>0</data> <!-- r4 -->
+    <data>RETURN_ADDRESS</data>
+  </stack>
+</gadgetmap>
