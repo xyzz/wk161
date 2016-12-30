@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<gadgetmap>
+  <regex>addret(\(v\))</regex>
+  <function>addret</function>
+  <stack>
+    <data>GADGET_ADDRESS(pop_r1-r2)</data>
+    <data>ARG0</data>
+    <data>0</data>
+    <data>GADGET_ADDRESS(add_r0_r1_add_sp_8_pop_r4_pc)</data>
+    <data>0</data>
+    <data>0</data>
+    <data>0</data> <!-- r4 -->
+    <data>RETURN_ADDRESS</data>
+  </stack>
+</gadgetmap>

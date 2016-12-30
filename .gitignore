@@ -2,3 +2,6 @@ loader
 exploit.html
 loader.bin
 loader.txt
+stage2
+stage2.bin
+*_processed.rop
