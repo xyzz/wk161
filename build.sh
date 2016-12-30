@@ -13,3 +13,8 @@ echo "2) stage2.rop"
 python3 preprocess.py stage2.rop stage2_processed.rop
 roptool-legacy -t wk161-roptool-target -x 0xDEADBAB0 -s stage2_processed.rop -o stage2
 python3 extract_rop.py stage2 stage2.bin
+
+echo "3) dumper.rop"
+python3 preprocess.py dumper.rop dumper_processed.rop
+roptool-legacy -t wk161-roptool-target -x 0xDEADBAB0 -s dumper_processed.rop -o dumper
+python3 extract_rop.py dumper dumper.bin
